@@ -34,7 +34,8 @@ If the MediaFast tools are not available in the session, stop and walk the user 
 |------|--------------|------|
 | `list_projects` | Lists the user's saved projects with their projectIds | Free |
 | `check_shadowban` | Checks a Reddit username for a shadowban | Free |
-| `find_subreddits` | Ranks subreddits for a product URL, with min karma and account age where a sub has them | Free: top 5, 3 calls a day. Paid: top 15 |
+| `create_project` | Saves the product as a project: picks subreddits and builds the daily plan (takes 1 to 2 minutes) | Free: 2 a day. Paid: 5 a day, within the plan's project limit |
+| `find_subreddits` | Ranks subreddits for a product URL. Where MediaFast knows a sub, it adds min karma and account age, the best post format and where the product may be mentioned | Free: top 5, 3 calls a day. Paid: top 15 |
 | `generate_reddit_post` | Drafts a title, body and optional follow up comment for one subreddit | Paid |
 | `find_comment_opportunities` | Finds live threads to reply to for a saved project | Paid, needs a saved project |
 | `get_growth_roadmap` | Returns the project's saved daily plan, or a 7 day preview from a URL | Paid |
@@ -45,9 +46,9 @@ Every tool has a daily limit per plan. When a tool answers that it is not on the
 
 1. Call `list_projects`.
    - One or more projects: confirm which product this is about and keep its projectId.
-   - No projects: ask for the website URL and a one or two sentence description. Tell the user that finding threads to comment on needs a project, which they create in the MediaFast dashboard. Everything else works from the URL.
+   - No project for this product: ask for the website URL, a one or two sentence description, and if they know it, their Reddit karma and account age. Offer to call `create_project`, it saves the project and returns a projectId the other tools use. If `create_project` is not available in this session, the user creates the project in the MediaFast dashboard. Everything except finding threads works from the URL alone.
 2. If the user shares their Reddit username, call `check_shadowban` before planning any posts. If the account looks shadowbanned, stop and share the next steps from the result, since posting from it would be wasted.
-3. Call `find_subreddits` with the URL, description and the closest `projectType` (tool, developers, saas, consumer). Show the list. Where a subreddit lists min karma or account age, compare it with the user's account and say which ones they can post in today.
+3. Call `find_subreddits` with the URL, description and the closest `projectType` (tool, developers, saas, consumer). Show the list. Where a subreddit lists min karma or account age, compare it with the user's account and say which ones they can post in today. Where it lists a best format and promotion rules, follow them when drafting.
 4. For each subreddit the user picks, call `generate_reddit_post`. Pass the projectId when there is one so the project's saved voice is used. Use `marketingType: "geo"` only when the user wants to get recommended by AI search. Show the title, body and follow up comment as they came back. Draft one subreddit at a time rather than all of them at once, the daily limit counts every call.
 5. With a projectId, call `find_comment_opportunities`. Show each thread with its link and why it fits, then help the user write the reply.
 6. Call `get_growth_roadmap` with the projectId, or with the URL and description if there is no project, and present the daily plan.
